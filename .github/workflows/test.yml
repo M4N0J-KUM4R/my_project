@@ -20,6 +20,8 @@ jobs:
     name: Python
     runs-on: ubuntu-latest
 
+    needs: [shell]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -30,7 +32,7 @@ jobs:
     name: Linux
     runs-on: ubuntu-latest
 
-    needs: [shell, python]
+    needs: [python]
 
     steps:
       - name: Checkout repository
@@ -62,21 +64,11 @@ jobs:
       - name: Run Jenkins commands
         run: echo "Executing Jenkins commands"
 
-  terraform:
-    name: Terraform
-    runs-on: ubuntu-latest
-
-    needs: [AWS, Azure]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Run Terraform commands
-        run: echo "Executing Terraform commands"
-
   aws:
     name: AWS
     runs-on: ubuntu-latest
+
+    needs: [jenkins]
 
     steps:
       - name: Checkout repository
@@ -84,11 +76,35 @@ jobs:
       - name: Run AWS commands
         run: echo "Executing AWS commands"
 
+  azure:
+    name: Azure
+    runs-on: ubuntu-latest
+
+    needs: [jenkins]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run Azure commands
+        run: echo "Executing Azure commands"
+
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    needs: [aws, azure]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run Terraform commands
+        run: echo "Executing Terraform commands"
+
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
 
-    needs: [github_actions, jenkins]
+    needs: [jenkins]
 
     steps:
       - name: Checkout repository
@@ -136,7 +152,7 @@ jobs:
     name: Ansible
     runs-on: ubuntu-latest
 
-    needs: [AWS, Azure]
+    needs: [aws, azure]
 
     steps:
       - name: Checkout repository
@@ -144,21 +160,11 @@ jobs:
       - name: Run Ansible commands
         run: echo "Executing Ansible commands"
 
-  azure:
-    name: Azure
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Run Azure commands
-        run: echo "Executing Azure commands"
-
   trivy:
     name: Trivy
     runs-on: ubuntu-latest
 
-    needs: [github_actions, jenkins]
+    needs: [jenkins]
 
     steps:
       - name: Checkout repository
